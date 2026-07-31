@@ -96,6 +96,37 @@ For an existing database that is already synced and embedded, only
 The first embedding or vector-search run downloads the configured local
 embedding model, so the machine needs internet access for initial setup.
 
+## One-Command Docker App Stack
+
+After `backend/.env` exists and the vector database has been populated by the
+pipeline at least once, start Postgres, the backend, and the frontend together
+from the repository root:
+
+```bash
+docker compose up --build
+```
+
+Then open:
+
+```txt
+http://localhost:5173
+```
+
+The root Compose stack reuses the same Postgres volume as the pipeline database,
+but it does not run the long FRED sync, tag sync, embedding, or indexing jobs.
+Run those pipeline commands manually when setting up data for the first time or
+when refreshing the retrieval index.
+
+If the pipeline-only Postgres container is already running from
+`pipeline/docker-compose.yml`, stop it before starting the root app stack:
+
+```bash
+cd pipeline
+docker compose down
+cd ..
+docker compose up --build
+```
+
 Start the backend:
 
 ```bash

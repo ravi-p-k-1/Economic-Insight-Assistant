@@ -1,0 +1,54 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: insightiq-vector-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: insightiq
+      POSTGRES_PASSWORD: insightiq
+      POSTGRES_DB: insightiq_vector
+    ports:
+      - "15432:5432"
+    volumes:
+      - insightiq_vector_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U insightiq -d insightiq_vector"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    container_name: insightiq-backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      PORT: 3001
+      FRONTEND_ORIGIN: http://localhost:5173
+      DATABASE_URL: postgres://insightiq:insightiq@postgres:5432/insightiq_vector
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - insightiq_model_cache:/root/.cache
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: insightiq-frontend
+    restart: unless-stopped
+    environment:
+      VITE_API_BASE_URL: http://localhost:3001
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  insightiq_vector_data:
+    name: pipeline_insightiq_vector_data
+  insightiq_model_cache:
