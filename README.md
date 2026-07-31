@@ -112,13 +112,14 @@ Then open:
 http://localhost:5173
 ```
 
-The root Compose stack reuses the same Postgres volume as the pipeline database,
-but it does not run the long FRED sync, tag sync, embedding, or indexing jobs.
-Run those pipeline commands manually when setting up data for the first time or
-when refreshing the retrieval index.
+The root Compose stack uses the same Postgres volume name as the pipeline
+database, but it does not run the long FRED sync, tag sync, embedding, or
+indexing jobs. Run those pipeline commands manually when setting up data for the
+first time or when refreshing the retrieval index.
 
-If the pipeline-only Postgres container is already running from
-`pipeline/docker-compose.yml`, stop it before starting the root app stack:
+Only one Compose stack should bind Postgres to port `15432` at a time. If the
+pipeline-only database is already running, stop it before starting the root app
+stack:
 
 ```bash
 cd pipeline

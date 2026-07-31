@@ -34,7 +34,7 @@ function parseSearchArgs() {
 
   if (!sawLimitOption && queryParts.length > 1 && /^\d+$/.test(queryParts[0])) {
     throw new Error(
-      `Did you mean "--limit ${queryParts[0]}"? Example: npm run db:search:fred -- --limit ${queryParts[0]} "${queryParts
+      `Did you mean "--limit ${queryParts[0]}"? Example: npm.cmd run db:search:fred -- --limit ${queryParts[0]} "${queryParts
         .slice(1)
         .join(' ')}"`,
     );
@@ -42,7 +42,7 @@ function parseSearchArgs() {
 
   if (!query) {
     throw new Error(
-      'Search query is required. Example: npm run db:search:fred -- "inflation and unemployment"',
+      'Search query is required. Example: npm.cmd run db:search:fred -- "inflation and unemployment"',
     );
   }
 
