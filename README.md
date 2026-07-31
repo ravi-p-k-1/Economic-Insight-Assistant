@@ -12,6 +12,32 @@ The app flow is:
 4. Backend asks Gemini for an overall summary and an explanation for each series.
 5. Frontend renders the overall summary, charts, and the latest 10 completed queries in browser history.
 
+## Architecture
+
+```mermaid
+flowchart TD
+  user[User] --> frontend[React Frontend]
+  frontend -->|Natural-language query| backend[Express Backend]
+
+  backend -->|Embed query| embedder[Xenova Transformers]
+  embedder --> queryVector[Query Vector]
+  queryVector --> vectorSearch[pgvector Semantic Search]
+  vectorSearch --> postgres[(PostgreSQL FRED Catalog)]
+  postgres -->|Real FRED series IDs| backend
+
+  backend -->|Series IDs| fredApi[FRED API]
+  fredApi -->|Annual observations and metadata| backend
+
+  backend -->|Retrieved data only| gemini[Gemini API]
+  gemini -->|Overall summary and chart explanations| backend
+
+  backend -->|Summary, charts, insights| frontend
+  frontend --> history[(Browser localStorage)]
+
+  fredApi -.offline sync.-> pipeline[Pipeline Jobs]
+  pipeline -->|Metadata, tags, embeddings, index| postgres
+```
+
 ## Project Structure
 
 - `frontend/`: Vite React client with React Router and Recharts.
