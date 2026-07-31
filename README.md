@@ -43,6 +43,8 @@ flowchart TD
 - `frontend/`: Vite React client with React Router and Recharts.
 - `backend/`: Express API server for vector search, Gemini explanations, and FRED calls.
 - `pipeline/`: Offline FRED catalog ingestion, tagging, embedding, and pgvector indexing jobs.
+  It also includes a retrieval evaluation script for measuring Recall@5,
+  valid series rate, and average response time.
 
 ## Prerequisites
 
@@ -244,4 +246,11 @@ node --check backend/src/services/vectorFred.js
 node --check backend/src/services/geminiInsights.js
 cd backend
 npm.cmd test
+```
+
+Retrieval evaluation:
+
+```bash
+cd ../pipeline
+npm.cmd run eval:retrieval
 ```

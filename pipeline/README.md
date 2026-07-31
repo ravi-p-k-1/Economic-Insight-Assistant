@@ -181,3 +181,27 @@ npm.cmd run db:search:fred -- --limit 20 "housing prices in California"
 The backend uses the same retrieval path for `/api/series-ids`, then sends the
 retrieved series and observations to Gemini for the overall dashboard summary
 and individual chart explanations.
+
+## Evaluate Retrieval
+
+Run the local retrieval benchmark without calling Gemini or FRED:
+
+```bash
+cd pipeline
+docker compose up -d
+npm.cmd run eval:retrieval
+```
+
+The default question set lives in `pipeline/evaluation/questions.json` and
+contains natural-language economic questions with expected relevant FRED series.
+The evaluation reports:
+
+- `Recall@5`
+- valid FRED-series rate
+- average response time
+
+Pass a different top-k value or question file when needed:
+
+```bash
+npm.cmd run eval:retrieval -- --limit 10 --questions evaluation/questions.json
+```

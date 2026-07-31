@@ -1,0 +1,142 @@
+[
+  {
+    "question": "How is inflation changing in the United States?",
+    "relevantSeries": ["CPIAUCSL", "CPILFESL", "PCEPI", "PCETRIM12M159SFRBDAL", "FPCPITOTLZGUSA"]
+  },
+  {
+    "question": "What is the current unemployment situation in the United States?",
+    "relevantSeries": ["UNRATE", "U6RATE", "LRUN64TTUSQ156S", "LRUNTTTTUSQ156S"]
+  },
+  {
+    "question": "How is the job market doing in the United States?",
+    "relevantSeries": ["UNRATE", "PAYEMS", "JTSJOL", "LREM64TTUSM156S", "LRUN64TTUSQ156S"]
+  },
+  {
+    "question": "Compare unemployment and GDP trends.",
+    "relevantSeries": ["UNRATE", "GDP", "GDPC1", "A191RL1Q225SBEA"]
+  },
+  {
+    "question": "How fast is GDP growing in the United States?",
+    "relevantSeries": ["GDP", "GDPC1", "A191RL1Q225SBEA"]
+  },
+  {
+    "question": "What is happening with consumer spending?",
+    "relevantSeries": ["PCE", "PCEC96", "DPCERD3Q086SBEA", "A794RX0Q048SBEA"]
+  },
+  {
+    "question": "How are personal income trends changing?",
+    "relevantSeries": ["PI", "DSPIC96", "A229RX0", "MEHOINUSA672N"]
+  },
+  {
+    "question": "What is happening with mortgage rates?",
+    "relevantSeries": ["MORTGAGE30US", "MORTGAGE15US"]
+  },
+  {
+    "question": "How are interest rates changing?",
+    "relevantSeries": ["FEDFUNDS", "DFF", "SOFR", "DGS10", "DGS2"]
+  },
+  {
+    "question": "What are Federal Reserve interest rates doing?",
+    "relevantSeries": ["FEDFUNDS", "DFF", "IRSTFR01USM156N"]
+  },
+  {
+    "question": "What does the yield curve suggest?",
+    "relevantSeries": ["T10Y2Y", "T10Y3M", "DGS10", "DGS2", "DGS3MO"]
+  },
+  {
+    "question": "What indicators should I monitor for a potential recession?",
+    "relevantSeries": ["USREC", "USRECD", "USRECP", "JHDUSRGDPBR", "T10Y2Y"]
+  },
+  {
+    "question": "How are gas prices and energy inflation changing?",
+    "relevantSeries": ["GASREGW", "CPIENGSL", "CUSR0000SETB01", "WPU0571"]
+  },
+  {
+    "question": "How is the housing market doing nationally?",
+    "relevantSeries": ["CSUSHPISA", "MSPUS", "EXHOSLUSM495S", "HOUST", "MORTGAGE30US"]
+  },
+  {
+    "question": "How are home prices changing in Texas?",
+    "relevantSeries": ["TXSTHPI", "MEDLISPRITX", "MEDLISPRIPERSQUFEETX"]
+  },
+  {
+    "question": "What is the unemployment rate in California?",
+    "relevantSeries": ["CAUR", "LAUST060000000000003A", "U6UNEM6CA"]
+  },
+  {
+    "question": "What is the unemployment rate in Texas?",
+    "relevantSeries": ["TXUR", "LAUST480000000000003A"]
+  },
+  {
+    "question": "How is Florida's population changing?",
+    "relevantSeries": ["FLPOP"]
+  },
+  {
+    "question": "How is California's population changing?",
+    "relevantSeries": ["CAPOP"]
+  },
+  {
+    "question": "How are wages changing in the United States?",
+    "relevantSeries": ["CES0500000003", "AHETPI", "LES1252881600Q", "COMPRNFB"]
+  },
+  {
+    "question": "How productive are workers in the United States?",
+    "relevantSeries": ["OPHNFB", "PRS85006092", "COMPRNFB"]
+  },
+  {
+    "question": "How is manufacturing activity doing?",
+    "relevantSeries": ["INDPRO", "IPMAN", "MANEMP", "AMTMNO"]
+  },
+  {
+    "question": "How is industrial production changing?",
+    "relevantSeries": ["INDPRO", "IPMAN", "TCU"]
+  },
+  {
+    "question": "How are retail sales trending?",
+    "relevantSeries": ["RSAFS", "RRSFS", "MRTSSM44000USS"]
+  },
+  {
+    "question": "How confident are consumers?",
+    "relevantSeries": ["UMCSENT", "CSCICP03USM665S"]
+  },
+  {
+    "question": "What is happening with household debt?",
+    "relevantSeries": ["HDTGPDUSQ163N", "CMDEBT", "TDSP"]
+  },
+  {
+    "question": "How are business investment trends changing?",
+    "relevantSeries": ["PNFI", "A008RE1Q156NBEA", "NEWORDER"]
+  },
+  {
+    "question": "How is the federal debt changing?",
+    "relevantSeries": ["GFDEBTN", "GFDEGDQ188S", "FYFSGDA188S"]
+  },
+  {
+    "question": "How is the trade balance changing?",
+    "relevantSeries": ["BOPGSTB", "NETEXP", "EXPGS", "IMPGS"]
+  },
+  {
+    "question": "How is the dollar exchange rate changing?",
+    "relevantSeries": ["DTWEXBGS", "DTWEXAFEGS", "EXUSEU", "DEXJPUS"]
+  },
+  {
+    "question": "How are bank lending conditions changing?",
+    "relevantSeries": ["DRTSCILM", "DRTSCIS", "BUSLOANS", "TOTLL"]
+  },
+  {
+    "question": "How are job openings changing?",
+    "relevantSeries": ["JTSJOL", "JTSQUR", "JTSHIR"]
+  },
+  {
+    "question": "How is labor force participation changing?",
+    "relevantSeries": ["CIVPART", "LNS11300060", "LNS11300002"]
+  },
+  {
+    "question": "How is poverty changing in the United States?",
+    "relevantSeries": ["PPAAUS00000A156NCEN", "SAIPEA0A156N"]
+  },
+  {
+    "question": "How is median household income changing?",
+    "relevantSeries": ["MEHOINUSA672N", "MEFAINUSA672N"]
+  }
+]
