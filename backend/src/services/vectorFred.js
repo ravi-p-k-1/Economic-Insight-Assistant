@@ -1,5 +1,6 @@
 import { embedText } from '../clients/embedding.js'
 import { withDatabaseClient } from '../clients/database.js'
+import { createServiceUnavailableError } from '../utils/errors.js'
 
 const defaultSeriesLimit = 4
 const defaultCandidateLimit = 20
@@ -52,29 +53,52 @@ function selectDiverseSeries(results, limit) {
 export async function getFredSeriesForQuery(query, options = {}) {
   const limit = options.limit ?? defaultSeriesLimit
   const candidateLimit = Math.max(options.candidateLimit ?? defaultCandidateLimit, limit)
-  const embedding = await embedText(query)
+  let embedding
+
+  try {
+    embedding = await embedText(query)
+  } catch (error) {
+    throw createServiceUnavailableError(
+      'Unable to load the local embedding model. Try again after setup completes.',
+      {
+        code: 'EMBEDDING_MODEL_UNAVAILABLE',
+        details: error.message,
+      },
+    )
+  }
+
   const vector = toVectorLiteral(embedding)
 
-  return withDatabaseClient(async (client) => {
-    const { rows } = await client.query(
-      `
-        SELECT
-          series_id,
-          title,
-          popularity,
-          embedding <=> $1::vector AS distance
-        FROM fred_series
-        WHERE embedding IS NOT NULL
-        ORDER BY embedding <=> $1::vector
-        LIMIT $2
-      `,
-      [vector, candidateLimit],
+  try {
+    return await withDatabaseClient(async (client) => {
+      const { rows } = await client.query(
+        `
+          SELECT
+            series_id,
+            title,
+            popularity,
+            embedding <=> $1::vector AS distance
+          FROM fred_series
+          WHERE embedding IS NOT NULL
+          ORDER BY embedding <=> $1::vector
+          LIMIT $2
+        `,
+        [vector, candidateLimit],
+      )
+
+      const rankedResults = rows
+        .map(normalizeVectorResult)
+        .sort((left, right) => calculateRerankScore(right) - calculateRerankScore(left))
+
+      return selectDiverseSeries(rankedResults, limit)
+    })
+  } catch (error) {
+    throw createServiceUnavailableError(
+      'The local FRED vector database is unavailable. Start Docker and the pipeline database, then try again.',
+      {
+        code: 'VECTOR_DATABASE_UNAVAILABLE',
+        details: error.message,
+      },
     )
-
-    const rankedResults = rows
-      .map(normalizeVectorResult)
-      .sort((left, right) => calculateRerankScore(right) - calculateRerankScore(left))
-
-    return selectDiverseSeries(rankedResults, limit)
-  })
+  }
 }

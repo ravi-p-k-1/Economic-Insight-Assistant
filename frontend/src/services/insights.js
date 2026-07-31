@@ -1,19 +1,45 @@
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3001'
 
-export async function getFredSeriesForQuery(query) {
-  const response = await fetch(`${apiBaseUrl}/api/series-ids`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ query }),
-  })
+async function parseApiResponse(response, fallbackMessage) {
+  let data
 
-  const data = await response.json()
+  try {
+    data = await response.json()
+  } catch {
+    data = {}
+  }
 
   if (!response.ok) {
-    throw new Error(data.error ?? 'Unable to fetch series IDs.')
+    throw new Error(data.error ?? fallbackMessage)
   }
+
+  return data
+}
+
+async function fetchJson(url, options, fallbackMessage) {
+  let response
+
+  try {
+    response = await fetch(url, options)
+  } catch {
+    throw new Error('Unable to reach the backend. Make sure the backend server is running.')
+  }
+
+  return parseApiResponse(response, fallbackMessage)
+}
+
+export async function getFredSeriesForQuery(query) {
+  const data = await fetchJson(
+    `${apiBaseUrl}/api/series-ids`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query }),
+    },
+    'Unable to fetch series IDs.',
+  )
 
   if (!Array.isArray(data.series)) {
     throw new Error('Backend returned an unexpected series response format.')
@@ -28,19 +54,17 @@ export async function getFredSeriesForQuery(query) {
 }
 
 export async function getInsightsForSeries(query, series) {
-  const response = await fetch(`${apiBaseUrl}/api/insights`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
+  const data = await fetchJson(
+    `${apiBaseUrl}/api/insights`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query, series }),
     },
-    body: JSON.stringify({ query, series }),
-  })
-
-  const data = await response.json()
-
-  if (!response.ok) {
-    throw new Error(data.error ?? 'Unable to generate insights.')
-  }
+    'Unable to generate insights.',
+  )
 
   if (
     typeof data.summary !== 'string' ||

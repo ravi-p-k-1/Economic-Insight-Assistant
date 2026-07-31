@@ -1,4 +1,5 @@
 import { getRequiredEnv } from '../utils/env.js'
+import { createServiceUnavailableError } from '../utils/errors.js'
 import {
   normalizeObservation,
   normalizeSeriesMetadata,
@@ -8,18 +9,45 @@ const fredApiBaseUrl = 'https://api.stlouisfed.org/fred'
 const recentObservationLimit = 24
 const defaultFrequency = 'a'
 
+async function fetchFredJson(url, fallbackMessage) {
+  let response
+
+  try {
+    response = await fetch(url)
+  } catch (error) {
+    throw createServiceUnavailableError('Unable to reach the FRED API.', {
+      code: 'FRED_API_UNAVAILABLE',
+      details: error.message,
+    })
+  }
+
+  let data
+
+  try {
+    data = await response.json()
+  } catch {
+    throw createServiceUnavailableError(fallbackMessage, {
+      code: 'FRED_API_INVALID_RESPONSE',
+    })
+  }
+
+  if (!response.ok) {
+    throw new Error(data.error_message ?? fallbackMessage)
+  }
+
+  return data
+}
+
 export async function getFredSeriesMetadata(seriesId) {
   const url = new URL(`${fredApiBaseUrl}/series`)
   url.searchParams.set('api_key', getRequiredEnv('FRED_API_KEY'))
   url.searchParams.set('file_type', 'json')
   url.searchParams.set('series_id', seriesId)
 
-  const response = await fetch(url)
-  const data = await response.json()
-
-  if (!response.ok) {
-    throw new Error(data.error_message ?? `Unable to fetch FRED metadata for ${seriesId}.`)
-  }
+  const data = await fetchFredJson(
+    url,
+    `Unable to fetch FRED metadata for ${seriesId}.`,
+  )
 
   if (!Array.isArray(data.seriess) || !data.seriess[0]) {
     throw new Error(`FRED returned missing metadata for ${seriesId}.`)
@@ -40,12 +68,10 @@ export async function getFredObservations(seriesId, options = {}) {
     String(options.limit ?? recentObservationLimit),
   )
 
-  const response = await fetch(url)
-  const data = await response.json()
-
-  if (!response.ok) {
-    throw new Error(data.error_message ?? `Unable to fetch FRED series ${seriesId}.`)
-  }
+  const data = await fetchFredJson(
+    url,
+    `Unable to fetch FRED series ${seriesId}.`,
+  )
 
   if (!Array.isArray(data.observations)) {
     throw new Error(`FRED returned an unexpected response for ${seriesId}.`)
@@ -77,4 +103,5 @@ export async function getFredSeriesWithObservations(series) {
   return results
     .filter((result) => result.status === 'fulfilled')
     .map((result) => result.value)
+    .filter((item) => item.observations.length > 0)
 }

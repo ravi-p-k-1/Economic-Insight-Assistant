@@ -2,6 +2,7 @@ import express from 'express'
 import { getFredSeriesForQuery } from './services/vectorFred.js'
 import { getInsightsForFredSeries } from './services/geminiInsights.js'
 import { getFredSeriesWithObservations } from './services/fred.js'
+import { isApiError } from './utils/errors.js'
 import { normalizeSelectedSeries } from './utils/series.js'
 
 const port = Number(process.env.PORT ?? 3001)
@@ -29,6 +30,23 @@ app.get('/health', (request, response) => {
   response.json({ status: 'ok' })
 })
 
+function sendErrorResponse(response, error) {
+  if (isApiError(error)) {
+    response.status(error.statusCode).json({
+      error: error.message,
+      code: error.code,
+      details: error.details,
+    })
+    return
+  }
+
+  console.error(error)
+  response.status(500).json({
+    error: 'Unexpected server error. Please try again.',
+    code: 'INTERNAL_SERVER_ERROR',
+  })
+}
+
 app.post('/api/series-ids', async (request, response) => {
   const query = request.body?.query?.trim()
 
@@ -39,9 +57,19 @@ app.post('/api/series-ids', async (request, response) => {
 
   try {
     const series = await getFredSeriesForQuery(query)
+
+    if (series.length === 0) {
+      response.status(404).json({
+        error:
+          'No matching FRED indicators were found. Try a more specific economic question.',
+        code: 'NO_SERIES_MATCHES',
+      })
+      return
+    }
+
     response.json({ series })
   } catch (error) {
-    response.status(500).json({ error: error.message })
+    sendErrorResponse(response, error)
   }
 })
 
@@ -69,7 +97,9 @@ app.post('/api/insights', async (request, response) => {
 
     if (seriesWithObservations.length === 0) {
       response.status(404).json({
-        error: 'None of the requested FRED series could be found.',
+        error:
+          'None of the selected FRED series returned usable annual observations.',
+        code: 'NO_USABLE_OBSERVATIONS',
       })
       return
     }
@@ -82,7 +112,7 @@ app.post('/api/insights', async (request, response) => {
       series: insights.series,
     })
   } catch (error) {
-    response.status(500).json({ error: error.message })
+    sendErrorResponse(response, error)
   }
 })
 

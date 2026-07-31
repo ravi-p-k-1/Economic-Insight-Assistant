@@ -27,6 +27,13 @@ function DashboardPage() {
 
     try {
       const selectedSeries = await getFredSeriesForQuery(query)
+
+      if (selectedSeries.length === 0) {
+        throw new Error(
+          'No matching FRED indicators were found. Try a more specific economic question.',
+        )
+      }
+
       const result = await getInsightsForSeries(query, selectedSeries)
       setSummary(result.summary)
       setSeries(result.series)

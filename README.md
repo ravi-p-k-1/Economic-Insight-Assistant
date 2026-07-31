@@ -221,6 +221,11 @@ The backend skips FRED series IDs that do not exist. If none of the requested se
 
 ## Validation
 
+GitHub Actions runs CI on pushes to `main` and on pull requests. The workflow
+installs dependencies, checks backend and pipeline syntax, lints the frontend,
+and builds the frontend without calling Gemini, FRED, or the local vector
+database.
+
 Frontend:
 
 ```bash

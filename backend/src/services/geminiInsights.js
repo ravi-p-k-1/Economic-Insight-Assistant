@@ -75,18 +75,34 @@ export async function getOverallInsightSummary(query, series) {
 }
 
 export async function getInsightsForFredSeries(query, series) {
-  const [summary, seriesWithInsights] = await Promise.all([
+  const summaryResult = await Promise.allSettled([
     getOverallInsightSummary(query, series),
-    Promise.all(
-      series.map(async (item) => ({
-        ...item,
-        insight: await getInsightForFredSeries(query, item),
-      })),
-    ),
   ])
 
+  const seriesWithInsights = await Promise.all(
+    series.map(async (item) => {
+      try {
+        return {
+          ...item,
+          insight: await getInsightForFredSeries(query, item),
+        }
+      } catch {
+        return {
+          ...item,
+          insight: {
+            summary:
+              'Insight generation is temporarily unavailable for this chart, but the retrieved FRED data is shown.',
+            keyTakeaways: [],
+          },
+        }
+      }
+    }),
+  )
+
   return {
-    summary,
+    summary: summaryResult[0].status === 'fulfilled'
+      ? summaryResult[0].value
+      : 'Overall summary generation is temporarily unavailable, but the retrieved FRED charts are shown.',
     series: seriesWithInsights,
   }
 }
