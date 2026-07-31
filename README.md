@@ -222,23 +222,26 @@ The backend skips FRED series IDs that do not exist. If none of the requested se
 ## Validation
 
 GitHub Actions runs CI on pushes to `main` and on pull requests. The workflow
-installs dependencies, checks backend and pipeline syntax, lints the frontend,
-and builds the frontend without calling Gemini, FRED, or the local vector
-database.
+installs dependencies, checks backend and pipeline syntax, runs backend and
+frontend tests, lints the frontend, and builds the frontend without calling
+Gemini, FRED, or the local vector database.
 
 Frontend:
 
 ```bash
 cd frontend
 npm.cmd run lint
+npm.cmd test
 npm.cmd run build
 ```
 
-Backend syntax check:
+Backend:
 
 ```bash
 cd ..
 node --check backend/src/server.js
 node --check backend/src/services/vectorFred.js
 node --check backend/src/services/geminiInsights.js
+cd backend
+npm.cmd test
 ```
